@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="ka">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ალფა სახლი — ბინები განვადებით | მიიღე უფასო კონსულტაცია</title>
+  <meta name="description" content="ალფა სახლი — თანამედროვე საცხოვრებელი კომპლექსი. ბინები შიდა განვადებით, მშენებლობის ხარისხის გარანტიით. დატოვე ნომერი და მიიღე ფასები და გეგმარებები.">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://example.com/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ალფა სახლი — ბინები განვადებით">
+  <meta property="og:description" content="დატოვე ნომერი და მიიღე ფასები, გეგმარებები და განვადების პირობები.">
+  <meta property="og:locale" content="ka_GE">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+
+  <!-- Google tag (gtag.js) — ID იკითხება assets/config.js-დან -->
+  <script src="assets/config.js"></script>
+  <script src="assets/gtag.js"></script>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header__inner">
+      <a href="#top" class="logo" aria-label="ალფა სახლი">
+        <span class="logo__mark" aria-hidden="true">α</span>
+        <span class="logo__text">ალფა სახლი</span>
+      </a>
+      <nav class="nav" aria-label="მთავარი ნავიგაცია">
+        <a href="#apartments">ბინები</a>
+        <a href="#payment">განვადება</a>
+        <a href="#location">მდებარეობა</a>
+        <a href="#faq">კითხვები</a>
+      </nav>
+      <a class="header__phone js-phone" href="tel:+995500000000" data-track="call_header">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg>
+        <span class="js-phone-text">+995 500 00 00 00</span>
+      </a>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- Hero + Lead form -->
+    <section class="hero">
+      <div class="container hero__grid">
+        <div class="hero__content">
+          <span class="badge">🔑 ბინები შიდა განვადებით — 0% სარგებელი</span>
+          <h1>შენი ახალი სახლი <span class="accent">ალფა სახლში</span></h1>
+          <p class="hero__lead">თანამედროვე საცხოვრებელი კომპლექსი კომფორტული გეგმარებებით, დახურული ეზოთი და მიწისქვეშა პარკინგით. დატოვე ნომერი — 15 წუთში დაგირეკავთ და გამოგიგზავნით ფასებსა და გეგმარებებს.</p>
+          <ul class="hero__points">
+            <li>შიდა განვადება 0%-ით</li>
+            <li>პირველი შენატანი <b class="js-down-payment">20%</b>-დან</li>
+            <li>ხარისხის გარანტია</li>
+            <li>ჩაბარება თეთრი/მწვანე კარკასით</li>
+          </ul>
+        </div>
+
+        <div class="lead-card" id="form">
+          <h2 class="lead-card__title">მიიღე ფასები და გეგმარებები</h2>
+          <p class="lead-card__sub">უფასო კონსულტაცია — ყოველგვარი ვალდებულების გარეშე</p>
+          <form class="lead-form js-lead-form" novalidate data-form-id="hero">
+            <label class="field">
+              <span class="field__label">სახელი</span>
+              <input type="text" name="name" autocomplete="given-name" placeholder="თქვენი სახელი" required minlength="2" maxlength="60">
+              <span class="field__error">გთხოვთ, მიუთითოთ სახელი</span>
+            </label>
+            <label class="field">
+              <span class="field__label">ტელეფონის ნომერი</span>
+              <div class="phone-input">
+                <span class="phone-input__prefix">+995</span>
+                <input type="tel" name="phone" inputmode="tel" autocomplete="tel-national" placeholder="5XX XX XX XX" required>
+              </div>
+              <span class="field__error">გთხოვთ, მიუთითოთ სწორი მობილურის ნომერი (5XX XX XX XX)</span>
+            </label>
+            <fieldset class="field field--chips">
+              <legend class="field__label">რომელი ბინა გაინტერესებთ?</legend>
+              <div class="chips">
+                <label class="chip"><input type="radio" name="apartment" value="studio"><span>სტუდიო</span></label>
+                <label class="chip"><input type="radio" name="apartment" value="1-bedroom" checked><span>1 საძინებელი</span></label>
+                <label class="chip"><input type="radio" name="apartment" value="2-bedroom"><span>2 საძინებელი</span></label>
+                <label class="chip"><input type="radio" name="apartment" value="3-bedroom"><span>3+ საძინებელი</span></label>
+              </div>
+            </fieldset>
+            <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <button type="submit" class="btn btn--primary btn--block">
+              <span class="btn__text">მიიღე შეთავაზება</span>
+              <span class="btn__spinner" aria-hidden="true"></span>
+            </button>
+            <p class="form-note">🔒 ღილაკზე დაჭერით ეთანხმებით <a href="privacy.html" target="_blank" rel="noopener">პერსონალური მონაცემების დამუშავებას</a>.</p>
+            <p class="form-status" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust bar -->
+    <section class="stats" aria-label="მთავარი მაჩვენებლები">
+      <div class="container stats__grid">
+        <div class="stat"><b>0%</b><span>შიდა განვადება</span></div>
+        <div class="stat"><b>24</b><span>თვემდე გადახდის ვადა</span></div>
+        <div class="stat"><b>24/7</b><span>დაცვა და ვიდეო-მეთვალყურეობა</span></div>
+        <div class="stat"><b>A+</b><span>ენერგოეფექტური მასალები</span></div>
+      </div>
+    </section>
+
+    <!-- Benefits -->
+    <section class="section" id="benefits">
+      <div class="container">
+        <div class="section__head">
+          <h2>რატომ ირჩევენ ალფა სახლს</h2>
+          <p>ყველაფერი, რაც კომფორტული ცხოვრებისთვის გჭირდებათ — ერთ სივრცეში</p>
+        </div>
+        <div class="cards">
+          <article class="card">
+            <div class="card__icon" aria-hidden="true">🏗️</div>
+            <h3>ხარისხიანი მშენებლობა</h3>
+            <p>მონოლითური კარკასი, სეისმომედეგი კონსტრუქცია და სერტიფიცირებული მასალები.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon" aria-hidden="true">💳</div>
+            <h3>მოქნილი განვადება</h3>
+            <p>შიდა განვადება სარგებლის გარეშე, ასევე ბანკის იპოთეკური სესხის შესაძლებლობა.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon" aria-hidden="true">🌳</div>
+            <h3>დახურული ეზო</h3>
+            <p>გამწვანებული ტერიტორია, საბავშვო მოედანი და დასასვენებელი ზონები.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon" aria-hidden="true">🚗</div>
+            <h3>მიწისქვეშა პარკინგი</h3>
+            <p>საკუთარი ავტოსადგომი და სათავსოები — პრობლემა პარკირებასთან აღარ გექნებათ.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon" aria-hidden="true">🛗</div>
+            <h3>თანამედროვე ლიფტები</h3>
+            <p>ჩქარი და უხმაურო ლიფტები, ლამაზად მოწყობილი ლობი და შესასვლელი.</p>
+          </article>
+          <article class="card">
+            <div class="card__icon" aria-hidden="true">🛡️</div>
+            <h3>უსაფრთხოება</h3>
+            <p>24/7 დაცვა, ვიდეო-მეთვალყურეობა და დაშვების კონტროლის სისტემა.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Apartments -->
+    <section class="section section--alt" id="apartments">
+      <div class="container">
+        <div class="section__head">
+          <h2>აირჩიე შენი ბინა</h2>
+          <p>გეგმარებები ნებისმიერი ოჯახისთვის — სტუდიოდან დიდ ბინებამდე</p>
+        </div>
+        <div class="plans">
+          <article class="plan">
+            <div class="plan__visual plan__visual--1" aria-hidden="true"><span>სტუდიო</span></div>
+            <div class="plan__body">
+              <h3>სტუდიო</h3>
+              <p class="plan__area">30–40 მ²</p>
+              <p class="plan__price">ფასი: <b>მოითხოვეთ კონსულტანტთან</b></p>
+              <a href="#form" class="btn btn--outline btn--block js-pick" data-apartment="studio">მიიღე ფასი</a>
+            </div>
+          </article>
+          <article class="plan plan--featured">
+            <span class="plan__tag">ყველაზე მოთხოვნადი</span>
+            <div class="plan__visual plan__visual--2" aria-hidden="true"><span>1 საძინებელი</span></div>
+            <div class="plan__body">
+              <h3>1 საძინებელი</h3>
+              <p class="plan__area">45–60 მ²</p>
+              <p class="plan__price">ფასი: <b>მოითხოვეთ კონსულტანტთან</b></p>
+              <a href="#form" class="btn btn--primary btn--block js-pick" data-apartment="1-bedroom">მიიღე ფასი</a>
+            </div>
+          </article>
+          <article class="plan">
+            <div class="plan__visual plan__visual--3" aria-hidden="true"><span>2 საძინებელი</span></div>
+            <div class="plan__body">
+              <h3>2 საძინებელი</h3>
+              <p class="plan__area">65–85 მ²</p>
+              <p class="plan__price">ფასი: <b>მოითხოვეთ კონსულტანტთან</b></p>
+              <a href="#form" class="btn btn--outline btn--block js-pick" data-apartment="2-bedroom">მიიღე ფასი</a>
+            </div>
+          </article>
+          <article class="plan">
+            <div class="plan__visual plan__visual--4" aria-hidden="true"><span>3+ საძინებელი</span></div>
+            <div class="plan__body">
+              <h3>3+ საძინებელი</h3>
+              <p class="plan__area">90–130 მ²</p>
+              <p class="plan__price">ფასი: <b>მოითხოვეთ კონსულტანტთან</b></p>
+              <a href="#form" class="btn btn--outline btn--block js-pick" data-apartment="3-bedroom">მიიღე ფასი</a>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Payment plan -->
+    <section class="section" id="payment">
+      <div class="container payment">
+        <div class="payment__text">
+          <h2>შიდა განვადება — მარტივად და გამჭვირვალედ</h2>
+          <p>შეიძინე ბინა ბანკის გარეშე. გადაიხადე პირველი შენატანი და დარჩენილი თანხა გადაანაწილე თანაბარ ყოველთვიურ გადასახადებად.</p>
+          <ol class="steps">
+            <li><b>დატოვე განაცხადი</b><span>კონსულტანტი დაგიკავშირდებათ 15 წუთში</span></li>
+            <li><b>აირჩიე ბინა</b><span>ნახე გეგმარებები და ობიექტი ადგილზე</span></li>
+            <li><b>გააფორმე ხელშეკრულება</b><span>პირველი შენატანით <span class="js-down-payment">20%</span>-დან</span></li>
+            <li><b>იცხოვრე კომფორტულად</b><span>დანარჩენი გადაიხადე თვეში ერთხელ</span></li>
+          </ol>
+        </div>
+
+        <div class="calc" aria-labelledby="calc-title">
+          <h3 id="calc-title">განვადების კალკულატორი</h3>
+          <label class="calc__row">
+            <span>ბინის ღირებულება <output class="js-calc-price-out">$80,000</output></span>
+            <input type="range" class="js-calc-price" min="30000" max="300000" step="1000" value="80000">
+          </label>
+          <label class="calc__row">
+            <span>პირველი შენატანი <output class="js-calc-down-out">20%</output></span>
+            <input type="range" class="js-calc-down" min="20" max="80" step="5" value="20">
+          </label>
+          <label class="calc__row">
+            <span>ვადა <output class="js-calc-months-out">24 თვე</output></span>
+            <input type="range" class="js-calc-months" min="6" max="24" step="6" value="24">
+          </label>
+          <div class="calc__result">
+            <span>ყოველთვიური გადასახადი</span>
+            <b class="js-calc-monthly">$2,667</b>
+          </div>
+          <p class="calc__note">გაანგარიშება საორიენტაციოა. ზუსტ პირობებს შეგითანხმებთ კონსულტანტი.</p>
+          <a href="#form" class="btn btn--primary btn--block">დააფიქსირე პირობები</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Location -->
+    <section class="section section--alt" id="location">
+      <div class="container location">
+        <div class="location__text">
+          <h2>მოსახერხებელი მდებარეობა</h2>
+          <p class="js-address">მისამართი: თბილისი (ზუსტ მისამართს გაცნობებთ კონსულტაციისას)</p>
+          <ul class="checklist">
+            <li>სკოლები და საბავშვო ბაღები ახლოს</li>
+            <li>სუპერმარკეტები, აფთიაქები და კაფეები</li>
+            <li>საზოგადოებრივი ტრანსპორტის გაჩერება</li>
+            <li>პარკი და სარეკრეაციო ზონები</li>
+          </ul>
+          <a href="#form" class="btn btn--primary">დაჯავშნე ობიექტის დათვალიერება</a>
+        </div>
+        <div class="location__map">
+          <iframe class="js-map" title="ალფა სახლის მდებარეობა რუკაზე" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps?q=Tbilisi&z=12&output=embed"></iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section" id="faq">
+      <div class="container container--narrow">
+        <div class="section__head">
+          <h2>ხშირად დასმული კითხვები</h2>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>რა პირობებით მუშაობს შიდა განვადება?</summary>
+            <p>პირველი შენატანი იწყება <span class="js-down-payment">20%</span>-დან, დარჩენილი თანხა კი თანაბრად ნაწილდება ყოველთვიურ გადასახადებად, დამატებითი სარგებლის გარეშე. დეტალურ პირობებს კონსულტანტი გაგაცნობთ.</p>
+          </details>
+          <details>
+            <summary>შესაძლებელია ბანკის იპოთეკური სესხით შეძენა?</summary>
+            <p>დიახ. ვთანამშრომლობთ წამყვან ბანკებთან და დაგეხმარებით იპოთეკური სესხის გაფორმების პროცესში.</p>
+          </details>
+          <details>
+            <summary>რა მდგომარეობაში ბარდება ბინა?</summary>
+            <p>ბინები ბარდება თეთრი ან მწვანე კარკასის მდგომარეობაში. ასევე შესაძლებელია სრული რემონტით შეძენა — ჰკითხეთ კონსულტანტს.</p>
+          </details>
+          <details>
+            <summary>როდის სრულდება მშენებლობა?</summary>
+            <p>მშენებლობის განრიგს და ჩაბარების ვადებს დაწვრილებით გაგაცნობთ კონსულტაციისას.</p>
+          </details>
+          <details>
+            <summary>შემიძლია ობიექტის ადგილზე ნახვა?</summary>
+            <p>რა თქმა უნდა. დატოვეთ ნომერი და შეგითანხმებთ თქვენთვის მოსახერხებელ დროს.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="cta">
+      <div class="container cta__inner">
+        <div>
+          <h2>მზად ხარ ახალი სახლისთვის?</h2>
+          <p>დატოვე ნომერი — გამოგიგზავნით ფასებს, გეგმარებებს და განვადების პირობებს.</p>
+        </div>
+        <form class="lead-form lead-form--inline js-lead-form" novalidate data-form-id="footer">
+          <label class="field">
+            <span class="sr-only">სახელი</span>
+            <input type="text" name="name" autocomplete="given-name" placeholder="სახელი" required minlength="2" maxlength="60">
+            <span class="field__error">მიუთითეთ სახელი</span>
+          </label>
+          <label class="field">
+            <span class="sr-only">ტელეფონი</span>
+            <div class="phone-input">
+              <span class="phone-input__prefix">+995</span>
+              <input type="tel" name="phone" inputmode="tel" autocomplete="tel-national" placeholder="5XX XX XX XX" required>
+            </div>
+            <span class="field__error">მიუთითეთ სწორი ნომერი</span>
+          </label>
+          <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <button type="submit" class="btn btn--accent">
+            <span class="btn__text">დამიკავშირდით</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+          </button>
+          <p class="form-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div>
+        <a href="#top" class="logo logo--light">
+          <span class="logo__mark" aria-hidden="true">α</span>
+          <span class="logo__text">ალფა სახლი</span>
+        </a>
+        <p class="footer__copy">© <span class="js-year">2026</span> ალფა სახლი. ყველა უფლება დაცულია.</p>
+      </div>
+      <div class="footer__links">
+        <a class="js-phone" href="tel:+995500000000" data-track="call_footer"><span class="js-phone-text">+995 500 00 00 00</span></a>
+        <a href="privacy.html">კონფიდენციალურობის პოლიტიკა</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Mobile sticky CTA -->
+  <div class="sticky-cta" aria-label="სწრაფი კონტაქტი">
+    <a class="sticky-cta__btn sticky-cta__btn--call js-phone" href="tel:+995500000000" data-track="call_sticky">📞 დარეკვა</a>
+    <a class="sticky-cta__btn sticky-cta__btn--wa js-whatsapp" href="https://wa.me/995500000000" target="_blank" rel="noopener" data-track="whatsapp_sticky">WhatsApp</a>
+    <a class="sticky-cta__btn sticky-cta__btn--form" href="#form">ფასის მიღება</a>
+  </div>
+
+  <script src="assets/main.js" defer></script>
+</body>
+</html>

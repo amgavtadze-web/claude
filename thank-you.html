@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ka">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>მადლობა! — ალფა სახლი</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/config.js"></script>
+  <script src="assets/gtag.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="container header__inner">
+      <a href="index.html" class="logo"><span class="logo__mark" aria-hidden="true">α</span><span class="logo__text">ალფა სახლი</span></a>
+      <a class="header__phone js-phone" href="tel:+995500000000"><span class="js-phone-text">+995 500 00 00 00</span></a>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="container thanks">
+      <div class="thanks__icon" aria-hidden="true">✓</div>
+      <h1>მადლობა, განაცხადი მიღებულია!</h1>
+      <p>ჩვენი კონსულტანტი დაგიკავშირდებათ უახლოეს 15 წუთში (სამუშაო საათებში) და გამოგიგზავნით ფასებს, გეგმარებებს და განვადების პირობებს.</p>
+      <p>თუ საკითხი გადაუდებელია — დაგვირეკეთ ახლავე.</p>
+      <div class="thanks__actions">
+        <a class="btn btn--primary js-phone" href="tel:+995500000000">📞 დარეკვა</a>
+        <a class="btn btn--outline" href="index.html">მთავარ გვერდზე დაბრუნება</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var cfg = window.ALPHA_CONFIG || {};
+      if (cfg.phone) document.querySelectorAll('.js-phone').forEach(function (a) { a.href = 'tel:+' + cfg.phone; });
+      if (cfg.phoneDisplay) document.querySelectorAll('.js-phone-text').forEach(function (el) { el.textContent = cfg.phoneDisplay; });
+    })();
+  </script>
+</body>
+</html>
