@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ka"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="manifest" href="manifest.json"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="მოსწავლეები"><meta name="theme-color" content="#16a34a"><title>მოსწავლეების აღრიცხვა</title>
+<style>
+:root{--bg:#f5f6f8;--card:#fff;--tx:#1b1f24;--mut:#6b7280;--ac:#16a34a;--red:#dc2626;--amb:#d97706;--bd:#e5e7eb}
+@media(prefers-color-scheme:dark){:root{--bg:#111418;--card:#1b2026;--tx:#e8eaed;--mut:#9aa3ad;--bd:#2c333b}}
+*{box-sizing:border-box}body{margin:0;font:15px system-ui,sans-serif;background:var(--bg);color:var(--tx)}
+main{max-width:900px;margin:0 auto;padding:16px}
+h1{font-size:20px}.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px;margin-bottom:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+label{font-size:12px;color:var(--mut);display:block}
+input,textarea{width:100%;padding:8px;border:1px solid var(--bd);border-radius:6px;background:var(--bg);color:var(--tx);font:inherit}
+button{padding:8px 12px;border:0;border-radius:6px;background:var(--ac);color:#fff;font:inherit;cursor:pointer}
+button.g{background:transparent;color:var(--tx);border:1px solid var(--bd)}button.r{background:var(--red)}
+.row{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:10px 0;border-top:1px solid var(--bd);flex-wrap:wrap}
+.row:first-child{border-top:0}.b{font-weight:600}.m{color:var(--mut);font-size:13px}
+.tag{font-size:12px;padding:2px 8px;border-radius:99px;border:1px solid}
+.over{color:var(--red)}.soon{color:var(--amb)}.ok{color:var(--ac)}.off{opacity:.5}
+.act{display:flex;gap:6px;flex-wrap:wrap}.sum{display:flex;gap:16px;flex-wrap:wrap}
+</style></head><body><main>
+<h1>🏋️ მოსწავლეების აღრიცხვა</h1>
+<div class="card sum" id="sum"></div>
+
+<div class="card" id="rem"></div>
+
+<div class="card"><b id="ft">ახალი მოსწავლე</b>
+<div class="grid" style="margin-top:8px">
+<div><label>სახელი *</label><input id="name"></div>
+<div><label>ტელეფონი * (5XXXXXXXX)</label><input id="phone" inputmode="tel"></div>
+<div><label>თანხა ₾ *</label><input id="fee" type="number" min="0"></div>
+<div><label>გადახდის დღე თვეში (1-31) *</label><input id="dueDay" type="number" min="1" max="31"></div>
+<div><label>დაწყების თარიღი (არასავალდებულო)</label><input id="startDate" type="date"></div>
+<div><label>შენიშვნა</label><input id="note"></div></div>
+<p><button onclick="saveM()" id="sb">დამატება</button> <button class="g" onclick="reset()">გასუფთავება</button></p></div>
+
+<div class="card"><b>SMS ტექსტი</b> <span class="m">(გადახდის წინა დღეს ზემოთ გამოჩნდება „გაგზავნა SMS" ღილაკი. გამოიყენეთ: {name} {amount} {date})</span>
+<textarea id="tpl" rows="3" style="margin-top:8px"></textarea>
+<p><button onclick="saveT()">შენახვა</button> <span id="tm" class="m"></span></p></div>
+
+<div class="card" id="list"></div>
+<p class=m><button class=g onclick="backup()">⬇ ბექაპი</button> <label style="display:inline"><input type=file accept=".json" onchange="restore(event)" style="display:none"><span class="g" style="padding:8px 12px;border:1px solid var(--bd);border-radius:6px;cursor:pointer">⬆ აღდგენა</span></label></p>
+</main>
+<script>
+let S={members:[]},editId=null;const $=i=>document.getElementById(i);
+const DEF='გამარჯობა {name}! შეგახსენებთ, რომ ხვალ ({date}) გადასახდელია აბონემენტი: {amount}₾. გმადლობთ!';
+const pad=n=>String(n).padStart(2,'0'),dIn=(y,m)=>new Date(Date.UTC(y,m,0)).getUTCDate();
+const todayStr=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+const addDays=(i,n)=>{const d=new Date(i+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+n);return d.toISOString().slice(0,10)};
+const nextMonth=(i,dd)=>{let[y,m]=i.split('-').map(Number);m++;if(m>12){m=1;y++}return `${y}-${pad(m)}-${pad(Math.min(dd,dIn(y,m)))}`};
+const firstDue=(i,dd)=>{const[y,m]=i.split('-').map(Number);return `${y}-${pad(m)}-${pad(Math.min(dd,dIn(y,m)))}`};
+const normPhone=r=>{let d=String(r||'').replace(/\D/g,'');if(d.length===9)d='995'+d;return d.length>=11?d:null};
+const fill=(t,m,date)=>t.replaceAll('{name}',m.name).replaceAll('{amount}',m.fee).replaceAll('{date}',date||m.nextDue);
+let DB;try{DB=JSON.parse(localStorage.getItem('trainer')||'null')}catch(e){}
+DB=DB||{members:[],sent:{},template:DEF,nextId:1};
+const persist=()=>localStorage.setItem('trainer',JSON.stringify(DB));
+function clean(b,old={}){const dueDay=Math.min(31,Math.max(1,Number(b.dueDay||old.dueDay))),fee=Number(b.fee??old.fee),
+ name=String(b.name??old.name??'').trim(),phone=String(b.phone??old.phone??'').trim();
+ if(!name||!normPhone(phone)||!(fee>=0)||!dueDay)throw new Error('შეავსეთ სახელი, სწორი ნომერი, თანხა და გადახდის დღე');
+ return{name,phone,fee,dueDay,startDate:(b.startDate??old.startDate)||'',note:String(b.note??old.note??'')}}
+const api=async(method,u,b)=>{const s=u.split('/'),today=todayStr();
+ if(s[0]==='state')return{today,template:DB.template,members:DB.members,sent:DB.sent};
+ if(s[0]==='template'){DB.template=b.template||DEF;persist();return{}}
+ if(s[0]==='members'&&!s[1]){const m=clean(b),n={id:DB.nextId++,active:true,...m,nextDue:firstDue(m.startDate||today,m.dueDay)};
+  if(!m.startDate&&n.nextDue<today)n.nextDue=nextMonth(n.nextDue,m.dueDay);DB.members.push(n);persist();return n}
+ const m=DB.members.find(x=>x.id===Number(s[1]));if(!m)throw new Error('ვერ მოიძებნა');
+ if(method==='PUT'){const od=m.dueDay,u2=clean(b,m);Object.assign(m,u2);if(u2.dueDay!==od)m.nextDue=firstDue(m.nextDue,u2.dueDay)}
+ else if(method==='DELETE')DB.members=DB.members.filter(x=>x!==m);
+ else if(s[2]==='paid')m.nextDue=nextMonth(m.nextDue,m.dueDay);
+ else if(s[2]==='toggle')m.active=!m.active;
+ persist();return m};
+// SMS: ხსნის Messages-ს მზა ტექსტით, ტრენერი აჭერს „გაგზავნა"-ს
+const smsLink=(m,date)=>`sms:+${normPhone(m.phone)}&body=${encodeURIComponent(fill(S.template,m,date))}`;
+function sendNow(id,date){const m=S.members.find(x=>x.id===id);DB.sent[id+':'+date]=1;persist();location.href=smsLink(m,date)}
+function backup(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB)],{type:'application/json'}));a.download='trainer-backup.json';a.click()}
+function restore(e){const f=e.target.files[0];if(!f)return;f.text().then(t=>{DB=JSON.parse(t);persist();load()})}
+const diff=d=>Math.round((new Date(d)-new Date(S.today))/864e5);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+async function load(){S=await api('GET','state');$('tpl').value=S.template;render()}
+function rem(){const t=S.today,tm=addDays(t,1);
+ const list=S.members.filter(m=>m.active&&(m.nextDue===tm||m.nextDue<=t)).map(m=>({m,date:m.nextDue}));
+ $('rem').innerHTML='<b>📩 დღევანდელი შეხსენებები</b>'+(list.length?list.map(({m,date})=>{const sent=S.sent[m.id+':'+date];
+  return `<div class=row><div><div class=b>${esc(m.name)}</div><div class=m>${date===tm?'ხვალ იხდის':date===t?'დღეს იხდის':'ვადაგადაცილებული'} · ${m.fee} ₾</div></div>
+  <button ${sent?'class=g':''} onclick="sendNow(${m.id},'${date}')">${sent?'✓ გაიგზავნა · თავიდან':'გაგზავნა SMS'}</button></div>`}).join(''):'<div class=m style="margin-top:6px">დღეს შესახსენებელი არავინაა</div>')}
+function render(){rem();
+ const a=S.members.filter(m=>m.active);
+ const over=a.filter(m=>diff(m.nextDue)<0),soon=a.filter(m=>diff(m.nextDue)>=0&&diff(m.nextDue)<=3);
+ $('sum').innerHTML=`<div><b>${a.length}</b><div class=m>აქტიური</div></div><div><b>${a.reduce((s,m)=>s+m.fee,0)} ₾</b><div class=m>თვიური შემოსავალი</div></div>
+ <div class=over><b>${over.length}</b><div class=m>ვადაგადაცილებული</div></div><div class=soon><b>${soon.length}</b><div class=m>3 დღეში იხდის</div></div>`;
+ const sorted=[...S.members].sort((x,y)=>(y.active-x.active)||x.nextDue.localeCompare(y.nextDue));
+ $('list').innerHTML=sorted.length?sorted.map(m=>{const d=diff(m.nextDue);
+  const st=d<0?`<span class="tag over">ვადა გადაცილებულია ${-d} დღით</span>`:d===0?`<span class="tag soon">დღეს</span>`:d<=3?`<span class="tag soon">${d} დღეში</span>`:`<span class="tag ok">${d} დღეში</span>`;
+  return `<div class="row ${m.active?'':'off'}"><div><div class=b>${esc(m.name)} ${st}</div>
+  <div class=m>${esc(m.phone)} · ${m.fee} ₾ · შემდეგი გადახდა: ${m.nextDue} (ყოველი ${m.dueDay}-ე)${m.startDate?' · აყვანილია: '+m.startDate:''}${m.note?' · '+esc(m.note):''}</div></div>
+  <div class=act><button onclick="paid(${m.id})">✓ გადაიხადა</button><button class=g onclick="edit(${m.id})">რედ.</button>
+  <button class=g onclick="test(${m.id})">ტესტ SMS</button><button class=g onclick="tog(${m.id})">${m.active?'პაუზა':'გააქტიურება'}</button>
+  <button class="g" onclick="del(${m.id})">🗑</button></div></div>`}).join(''):'<span class=m>ჯერ არავინ არის დამატებული</span>'}
+const F=['name','phone','fee','dueDay','startDate','note'];
+function reset(){editId=null;F.forEach(f=>$(f).value='');$('sb').textContent='დამატება';$('ft').textContent='ახალი მოსწავლე'}
+function edit(id){const m=S.members.find(x=>x.id===id);editId=id;F.forEach(f=>$(f).value=m[f]??'');$('sb').textContent='შენახვა';$('ft').textContent='რედაქტირება';scrollTo(0,0)}
+async function saveM(){try{const b={};F.forEach(f=>b[f]=$(f).value);
+ await(editId?api('PUT','members/'+editId,b):api('POST','members',b));reset();load()}catch(e){alert(e.message)}}
+const act=async(u,m='POST')=>{try{await api(m,u);load()}catch(e){alert(e.message)}};
+const paid=id=>act(`members/${id}/paid`),tog=id=>act(`members/${id}/toggle`);
+const del=id=>confirm('წავშალო?')&&act('members/'+id,'DELETE');
+const test=id=>{const m=S.members.find(x=>x.id===id);location.href=smsLink(m)};
+async function saveT(){await api('PUT','template',{template:$('tpl').value});$('tm').textContent='შენახულია ✓'}
+load();if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script></body></html>
