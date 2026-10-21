@@ -11,7 +11,7 @@ main{padding:12px;max-width:1240px;margin:0 auto}
 #list{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;align-items:start}
 #list .card{margin:0}#list #msg{grid-column:1/-1}
 #q{max-width:260px;margin:0 12px;flex:1;background:#222;border-color:#333;color:#fff;padding:8px 10px}
-@media(min-width:900px){body{font-size:17px}.ph{width:84px;height:84px}.nm{font-size:18px}.sub{font-size:14px}header{padding:14px 28px}main{padding:20px 28px}.add{max-width:340px;display:block;margin-top:14px}.step button{width:52px;height:52px}}
+
 .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px;margin-bottom:10px}
 .top{display:flex;gap:12px;align-items:center}
 .ph{width:68px;height:68px;border-radius:10px;background:var(--bd);flex:none;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;overflow:hidden}
@@ -35,9 +35,26 @@ input{width:100%;padding:11px;border:1px solid var(--bd);border-radius:8px;font-
 .btns button.ok{background:var(--red);color:#fff;flex:2}.btns button.del{background:none;color:var(--red);flex:none;padding:13px 10px}
 #pv{width:84px;height:84px;border-radius:10px;object-fit:cover;background:var(--bd);display:none}
 #msg{text-align:center;color:var(--mut);padding:20px}
+.dc,.hd,.d-only{display:none}
+@media(min-width:900px){
+body{font-size:16px}header{padding:14px 28px}main{padding:20px 28px}.m-only{display:none}
+#list{display:block;background:var(--card);border:1px solid var(--bd);border-top:0;border-radius:0 0 12px 12px;overflow:hidden}
+.hd,.card{display:grid;grid-template-columns:64px minmax(180px,1fr) 120px 120px 100px 190px 110px 56px;column-gap:14px;align-items:center;padding:8px 16px}
+.hd{background:#111;color:#fff;font-size:13px;font-weight:600;padding:10px 16px;margin:0;border-radius:12px 12px 0 0}
+.card{border:0;border-bottom:1px solid var(--bd);border-radius:0;margin:0;background:var(--card)}
+.card:nth-child(even){background:var(--bg)}
+.top,.info,.bot{display:contents}
+.ph{width:48px;height:48px;order:1;font-size:18px}.nm{order:2;font-size:16px}
+.dc{display:block;order:3;font-size:16px;text-align:right}.dc.p{order:4}.dc.t{order:5}
+.step{order:6;justify-content:center}.step button{width:38px;height:38px;font-size:22px}.step span{font-size:20px;min-width:50px}
+.left{order:7;text-align:center}.left b{font-size:18px}.edit{order:8}
+.hd .d-only{display:block}.hd{display:grid}.hd .r{text-align:right}.hd .c{text-align:center}
+.add{max-width:340px;display:block;margin-top:14px}
+}
 </style></head><body>
 <header><b>🏋️ დანამატები</b><input id="q" type="search" placeholder="ძებნა…" oninput="draw()"><small id="tot"></small></header>
-<main><div id="list"><div id="msg">იტვირთება…</div></div>
+<main><div class="hd"><span></span><span class="d-only">დასახელება</span><span class="d-only r">შეკვრის ფასი</span><span class="d-only r">1 მიღების ფასი</span><span class="d-only r">სულ მიღება</span><span class="d-only c">გაყიდული</span><span class="d-only c">დარჩენილი</span><span></span></div>
+<div id="list"><div id="msg">იტვირთება…</div></div>
 <button class="add" onclick="openForm(null)">＋ ახალი პროდუქტი</button></main>
 
 <div id="ov"><form id="f" onsubmit="save(event)">
@@ -64,9 +81,10 @@ function card(p){const left=p.total?p.total-p.sold:null;
  return `<div class=card id=r${p.row}><div class=top>
  <div class=ph onclick="pick(${p.row})">${p.photo?`<img src="${esc(p.photo)}">`:'📷'}</div>
  <div class=info><div class=nm>${esc(p.name)}</div>
- <div class=sub>შეკვრა: <b>${fmt(p.cost)} ₾</b> · 1 მიღება: <b>${fmt(p.price)} ₾</b><br>სულ: <b>${p.total||'-'}</b> მიღება</div></div>
+ <div class="sub m-only">შეკვრა: <b>${fmt(p.cost)} ₾</b> · 1 მიღება: <b>${fmt(p.price)} ₾</b><br>სულ: <b>${p.total||'-'}</b> მიღება</div>
+ <span class=dc>${fmt(p.cost)} ₾</span><span class="dc p">${fmt(p.price)} ₾</span><span class="dc t">${p.total||'-'}</span></div>
  <button class=edit onclick="openForm(${p.row})">✎</button></div>
- <div class=bot><div class="left ${left!==null&&left<=5?'low':''}">${left!==null?'დარჩა <b>'+left+'</b>':''}</div>
+ <div class=bot><div class="left ${left!==null&&left<=5?'low':''}">${left!==null?'<span class=m-only>დარჩა </span><b>'+left+'</b>':''}</div>
  <div class=step><button onclick="chg(${p.row},-1)">−</button><span>${p.sold}</span><button class=p onclick="chg(${p.row},1)">+</button></div></div></div>`}
 function draw(){const q=$('q').value.trim().toLowerCase(),L=D.filter(p=>!q||String(p.name).toLowerCase().includes(q));
  $('list').innerHTML=L.length?L.map(card).join(''):'<div id=msg>პროდუქტი არ არის</div>'}

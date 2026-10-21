@@ -9,7 +9,7 @@ const PIN = '1234';            // ⚠ შეცვალე! ტრენერ�
 const SHEET_NAME = 'Supplements';
 const FIRST_ROW = 2;
 const ROWS = 60;
-const COL = { PHOTO: 1, NAME: 2, COST: 3, PRICE: 4, TOTAL: 5, SOLD: 6, LEFT: 7, REV: 8, PROFIT: 9, URL: 10 };
+const COL = { PHOTO: 1, NAME: 2, COST: 3, PRICE: 4, TOTAL: 5, SOLD: 6, LEFT: 7, REV: 8, URL: 9 };
 
 // [დასახელება, თვითღირებულება, ფასი მიღებაზე, სულ მიღება]
 const SEED = [
@@ -48,16 +48,16 @@ function auth_(pin) { if (String(pin) !== String(PIN)) throw new Error('არ�
 
 function getData(pin) {
   auth_(pin);
-  const rows = sheet_().getRange(FIRST_ROW, 1, ROWS, 10).getValues();
+  const rows = sheet_().getRange(FIRST_ROW, 1, ROWS, 9).getValues();
   const products = [];
-  let revenue = 0, profit = 0;
+  let revenue = 0;
   rows.forEach((r, i) => {
     if (r[COL.NAME - 1] === '') return;
     products.push({ row: i + FIRST_ROW, name: r[COL.NAME - 1], cost: r[COL.COST - 1], price: r[COL.PRICE - 1], total: Number(r[COL.TOTAL - 1]) || 0,
       sold: Number(r[COL.SOLD - 1]) || 0, photo: r[COL.URL - 1] });
-    revenue += Number(r[COL.REV - 1]) || 0; profit += Number(r[COL.PROFIT - 1]) || 0;
+    revenue += Number(r[COL.REV - 1]) || 0;
   });
-  return { products, revenue, profit };
+  return { products, revenue };
 }
 
 /** delta: +1 / −1. გაყიდული არ გასცდება 0-სა და მარაგს */
@@ -127,6 +127,18 @@ function deleteProduct(pin, row) {
   return true;
 }
 
+/** ერთხელ გაუშვი, თუ setup უკვე გაქვს გაშვებული: ამოაქვს „მოგება" სვეტი არსებული ფურცლიდან */
+function removeProfitColumn() {
+  const sh = sheet_();
+  if (sh.getRange(1, 9).getValue() !== 'მოგება ₾') { SpreadsheetApp.getUi().alert('მოგების სვეტი უკვე ამოღებულია'); return; }
+  sh.deleteColumn(9);   // ფოტოს ბმულის სვეტი ინაცვლებს I-ში, ფორმულები თავისით მიყვება
+  sh.getRange('K1:L3').clearContent();
+  sh.getRange('K1:L2').setValues([
+    ['ჯამი შემოსავალი', `=SUM(H${FIRST_ROW}:H${FIRST_ROW + ROWS - 1})`], ['გაყიდული მიღება', `=SUM(F${FIRST_ROW}:F${FIRST_ROW + ROWS - 1})`]]);
+  sh.getRange('K1:K2').setFontWeight('bold');
+  SpreadsheetApp.getUi().alert('მზადაა ✓');
+}
+
 /** ერთხელ გაუშვი ედიტორიდან: Drive-ზე წვდომის ნებართვისთვის (ფოტოებისთვის) */
 function authorizeDrive() {
   DriveApp.getRootFolder();
@@ -147,41 +159,39 @@ function setup() {
   if (old) ss.deleteSheet(old);
   const last = FIRST_ROW + ROWS - 1;
 
-  sheet.getRange(1, 1, 1, 10).setValues([['ფოტო', 'დასახელება', 'თვითღირებულება ₾', 'ფასი მიღებაზე ₾', 'სულ მიღება', 'გაყიდული', 'დარჩენილი', 'შემოსავალი ₾', 'მოგება ₾', 'ფოტოს ბმული']])
+  sheet.getRange(1, 1, 1, 9).setValues([['ფოტო', 'დასახელება', 'თვითღირებულება ₾', 'ფასი მიღებაზე ₾', 'სულ მიღება', 'გაყიდული', 'დარჩენილი', 'შემოსავალი ₾', 'ფოტოს ბმული']])
     .setBackground('#111').setFontColor('#fff').setFontWeight('bold').setVerticalAlignment('middle').setWrap(true);
   sheet.setFrozenRows(1);
   SEED.forEach((p, i) => sheet.getRange(FIRST_ROW + i, COL.NAME, 1, 4).setValues([[p[0], p[1], p[2] || '', p[3]]]));
 
-  const f = { photo: [], left: [], rev: [], profit: [] };
+  const f = { photo: [], left: [], rev: [] };
   for (let r = FIRST_ROW; r <= last; r++) {
     f.photo.push([`=IF($J${r}="","",IMAGE($J${r}))`]);
     f.left.push([`=IF($B${r}="","",N($E${r})-N($F${r}))`]);
     f.rev.push([`=IF($B${r}="","",N($F${r})*N($D${r}))`]);
-    f.profit.push([`=IF($B${r}="","",$H${r}-N($C${r}))`]);
   }
   sheet.getRange(FIRST_ROW, COL.PHOTO, ROWS, 1).setFormulas(f.photo);
   sheet.getRange(FIRST_ROW, COL.LEFT, ROWS, 1).setFormulas(f.left);
   sheet.getRange(FIRST_ROW, COL.REV, ROWS, 1).setFormulas(f.rev);
-  sheet.getRange(FIRST_ROW, COL.PROFIT, ROWS, 1).setFormulas(f.profit);
 
-  sheet.getRange(FIRST_ROW, 1, ROWS, 10).setVerticalAlignment('middle');
+  sheet.getRange(FIRST_ROW, 1, ROWS, 9).setVerticalAlignment('middle');
   sheet.getRange(FIRST_ROW, COL.NAME, ROWS, 1).setFontWeight('bold').setWrap(true);
   sheet.getRange(FIRST_ROW, COL.SOLD, ROWS, 1).setFontSize(20).setFontWeight('bold').setHorizontalAlignment('center').setBackground('#fef2f2');
   sheet.getRange(FIRST_ROW, COL.LEFT, ROWS, 1).setFontSize(14).setHorizontalAlignment('center');
   sheet.setRowHeights(FIRST_ROW, ROWS, 80);
   sheet.setColumnWidth(COL.PHOTO, 90); sheet.setColumnWidth(COL.NAME, 160);
-  [COL.COST, COL.PRICE, COL.TOTAL, COL.SOLD, COL.LEFT, COL.REV, COL.PROFIT].forEach(c => sheet.setColumnWidth(c, 95));
+  [COL.COST, COL.PRICE, COL.TOTAL, COL.SOLD, COL.LEFT, COL.REV].forEach(c => sheet.setColumnWidth(c, 95));
   sheet.setColumnWidth(COL.URL, 120);
-  sheet.getRange(FIRST_ROW, 1, ROWS, 10).setBorder(null, null, true, null, null, null, '#e5e7eb', SpreadsheetApp.BorderStyle.SOLID);
+  sheet.getRange(FIRST_ROW, 1, ROWS, 9).setBorder(null, null, true, null, null, null, '#e5e7eb', SpreadsheetApp.BorderStyle.SOLID);
 
   const lr = sheet.getRange(FIRST_ROW, COL.LEFT, ROWS, 1);
   sheet.setConditionalFormatRules([
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(`=AND(ISNUMBER($G${FIRST_ROW}),$G${FIRST_ROW}<=0)`).setBackground('#fecaca').setFontColor('#b91c1c').setRanges([lr]).build(),
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied(`=AND(ISNUMBER($G${FIRST_ROW}),$G${FIRST_ROW}<=5)`).setBackground('#fed7aa').setRanges([lr]).build(),
   ]);
-  sheet.getRange('L1:M3').setValues([
-    ['ჯამი შემოსავალი', `=SUM(H${FIRST_ROW}:H${last})`], ['ჯამი მოგება', `=SUM(I${FIRST_ROW}:I${last})`], ['გაყიდული მიღება', `=SUM(F${FIRST_ROW}:F${last})`]]);
-  sheet.getRange('L1:L3').setFontWeight('bold'); sheet.setColumnWidth(12, 130);
+  sheet.getRange('K1:L2').setValues([
+    ['ჯამი შემოსავალი', `=SUM(H${FIRST_ROW}:H${last})`], ['გაყიდული მიღება', `=SUM(F${FIRST_ROW}:F${last})`]]);
+  sheet.getRange('K1:K2').setFontWeight('bold'); sheet.setColumnWidth(11, 130);
 
   ss.setActiveSheet(sheet);
   SpreadsheetApp.getUi().alert('მზადაა! ახლა Deploy → New deployment → Web app (Execute as: Me, Access: Anyone) და ბმული გახსენი ტელეფონზე.');
