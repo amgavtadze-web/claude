@@ -29,6 +29,7 @@ function onOpen() {
 
 /** ავტომატურად მუშაობს ყოველ ცვლილებაზე (ტელეფონზეც) */
 function onEdit(e) {
+  if (!e || !e.range) return; // ხელით გაშვებისას ცვლილება არ არსებობს
   const r = e.range, sheet = r.getSheet();
   if (sheet.getName() !== SHEET_NAME || r.getRow() < FIRST_ROW) return;
   if (r.getNumRows() !== 1 || r.getNumColumns() !== 1 || r.getColumn() !== COL.ADD) return;
