@@ -53,13 +53,14 @@ function resetSold() {
 
 function setup() {
   const ss = SpreadsheetApp.getActive();
-  let sheet = ss.getSheetByName(SHEET_NAME);
-  if (sheet) {
+  const old = ss.getSheetByName(SHEET_NAME);
+  if (old) {
     const ui = SpreadsheetApp.getUi();
     if (ui.alert('ფურცელი უკვე არსებობს. წავშალო და თავიდან შევქმნა? (ფოტოებიც წაიშლება)', ui.ButtonSet.YES_NO) !== ui.Button.YES) return;
-    ss.deleteSheet(sheet);
+    old.setName('old_' + Date.now()); // ჯერ ახალს ვქმნით, რადგან ბოლო ფურცლის წაშლა შეუძლებელია
   }
-  sheet = ss.insertSheet(SHEET_NAME);
+  const sheet = ss.insertSheet(SHEET_NAME);
+  if (old) ss.deleteSheet(old);
   const last = FIRST_ROW + ROWS - 1;
 
   sheet.getRange(1, 1, 1, 10).setValues([['ფოტო', 'დასახელება', 'თვითღირებულება ₾', 'ფასი მიღებაზე ₾', 'სულ მიღება', 'გაყიდული', '➕ გაყიდვა', 'დარჩენილი', 'შემოსავალი ₾', 'მოგება ₾']])
