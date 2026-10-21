@@ -97,9 +97,40 @@ function uploadPhoto(pin, row, dataUrl) {
   const folder = it.hasNext() ? it.next() : DriveApp.createFolder('Supplement photos');
   const file = folder.createFile(Utilities.newBlob(Utilities.base64Decode(m[2]), m[1], 'p' + row + '_' + Date.now() + '.jpg'));
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-  const url = 'https://drive.google.com/thumbnail?id=' + file.getId() + '&sz=w500';
+  const url = 'https://lh3.googleusercontent.com/d/' + file.getId() + '=w500';
   sheet_().getRange(row, COL.URL).setValue(url);
   return url;
+}
+
+/** პროდუქტის რედაქტირება: ცვლილება პირდაპირ ეწერება Sheet-ში */
+function updateProduct(pin, row, p) {
+  auth_(pin);
+  const lock = LockService.getScriptLock(); lock.waitLock(10000);
+  try {
+    const sh = sheet_();
+    if (row < FIRST_ROW || row >= FIRST_ROW + ROWS) throw new Error('არასწორი რიგი');
+    const name = String(p.name || '').trim(); if (!name) throw new Error('ჩაწერე დასახელება');
+    const total = Number(p.total) || 0;
+    const sold = Math.max(0, total ? Math.min(Number(p.sold) || 0, total) : Number(p.sold) || 0);
+    sh.getRange(row, COL.NAME, 1, 5).setValues([[name, p.cost === '' ? '' : Number(p.cost), p.price === '' ? '' : Number(p.price), total || '', sold || '']]);
+    return true;
+  } finally { lock.releaseLock(); }
+}
+
+/** პროდუქტის წაშლა (ფორმულები რჩება, მონაცემები ცარიელდება) */
+function deleteProduct(pin, row) {
+  auth_(pin);
+  const sh = sheet_();
+  if (row < FIRST_ROW || row >= FIRST_ROW + ROWS) throw new Error('არასწორი რიგი');
+  sh.getRange(row, COL.NAME, 1, 5).clearContent();
+  sh.getRange(row, COL.URL).clearContent();
+  return true;
+}
+
+/** ერთხელ გაუშვი ედიტორიდან: Drive-ზე წვდომის ნებართვისთვის (ფოტოებისთვის) */
+function authorizeDrive() {
+  DriveApp.getRootFolder();
+  SpreadsheetApp.getUi().alert('Drive-ის ნებართვა მზადაა ✓');
 }
 
 // ---------- ფურცლის შექმნა ----------
