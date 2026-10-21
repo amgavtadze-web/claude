@@ -53,7 +53,7 @@ function getData(pin) {
   let revenue = 0, profit = 0;
   rows.forEach((r, i) => {
     if (r[COL.NAME - 1] === '') return;
-    products.push({ row: i + FIRST_ROW, name: r[COL.NAME - 1], price: r[COL.PRICE - 1], total: Number(r[COL.TOTAL - 1]) || 0,
+    products.push({ row: i + FIRST_ROW, name: r[COL.NAME - 1], cost: r[COL.COST - 1], price: r[COL.PRICE - 1], total: Number(r[COL.TOTAL - 1]) || 0,
       sold: Number(r[COL.SOLD - 1]) || 0, photo: r[COL.URL - 1] });
     revenue += Number(r[COL.REV - 1]) || 0; profit += Number(r[COL.PROFIT - 1]) || 0;
   });
