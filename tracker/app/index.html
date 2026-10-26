@@ -34,7 +34,11 @@ button.g{background:transparent;color:var(--tx);border:1px solid var(--bd)}butto
 <p><button onclick="saveM()" id="sb">დამატება</button> <button class="g" onclick="reset()">გასუფთავება</button></p></div>
 
 <div class="card"><b>SMS ტექსტი</b> <span class="m">(გადახდის წინა დღეს ზემოთ გამოჩნდება „გაგზავნა SMS" ღილაკი. გამოიყენეთ: {name} {amount} {date})</span>
-<textarea id="tpl" rows="3" style="margin-top:8px"></textarea>
+<textarea id="tpl" rows="3" style="margin-top:8px" oninput="preview()"></textarea>
+<div class="chips" style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><span class="m">დაამატე:</span>
+<button type="button" onclick="insVar('{name}')">👤 სახელი</button><button type="button" onclick="insVar('{amount}')">💰 თანხა</button><button type="button" onclick="insVar('{date}')">📅 თარიღი</button></div>
+<div class="m" id="pv" style="margin-top:8px;padding:8px;border:1px dashed var(--bd);border-radius:6px"></div>
+
 <p><button onclick="saveT()">შენახვა</button> <span id="tm" class="m"></span></p></div>
 
 <div class="card" id="list"></div>
@@ -49,7 +53,7 @@ const addDays=(i,n)=>{const d=new Date(i+'T00:00:00Z');d.setUTCDate(d.getUTCDate
 const nextMonth=(i,dd)=>{let[y,m]=i.split('-').map(Number);m++;if(m>12){m=1;y++}return `${y}-${pad(m)}-${pad(Math.min(dd,dIn(y,m)))}`};
 const firstDue=(i,dd)=>{const[y,m]=i.split('-').map(Number);return `${y}-${pad(m)}-${pad(Math.min(dd,dIn(y,m)))}`};
 const normPhone=r=>{let d=String(r||'').replace(/\D/g,'');if(d.length===9)d='995'+d;return d.length>=11?d:null};
-const fill=(t,m,date)=>t.replaceAll('{name}',m.name).replaceAll('{amount}',m.fee).replaceAll('{date}',date||m.nextDue);
+const fill=(t,m,date)=>t.replaceAll('{name}',m.name).replaceAll('{amount}',m.fee).replaceAll('{date}',ddmm(date||m.nextDue));
 let DB;try{DB=JSON.parse(localStorage.getItem('trainer')||'null')}catch(e){}
 DB=DB||{members:[],sent:{},template:DEF,nextId:1};
 const persist=()=>localStorage.setItem('trainer',JSON.stringify(DB));
@@ -75,7 +79,7 @@ function backup(){const a=document.createElement('a');a.href=URL.createObjectURL
 function restore(e){const f=e.target.files[0];if(!f)return;f.text().then(t=>{DB=JSON.parse(t);persist();load()})}
 const diff=d=>Math.round((new Date(d)-new Date(S.today))/864e5);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-async function load(){S=await api('GET','state');$('tpl').value=S.template;render()}
+async function load(){S=await api('GET','state');$('tpl').value=S.template;render();preview()}
 function rem(){const t=S.today,tm=addDays(t,1);
  const list=S.members.filter(m=>m.active&&(m.nextDue===tm||m.nextDue<=t)).map(m=>({m,date:m.nextDue}));
  $('rem').innerHTML='<b>📩 დღევანდელი შეხსენებები</b>'+(list.length?list.map(({m,date})=>{const sent=S.sent[m.id+':'+date];
@@ -103,6 +107,10 @@ const act=async(u,m='POST')=>{try{await api(m,u);load()}catch(e){alert(e.message
 const paid=id=>act(`members/${id}/paid`),tog=id=>act(`members/${id}/toggle`);
 const del=id=>confirm('წავშალო?')&&act('members/'+id,'DELETE');
 const test=id=>{const m=S.members.find(x=>x.id===id);location.href=smsLink(m)};
+const ddmm=iso=>String(iso).split('-').reverse().join('.');
+function insVar(v){const t=$('tpl'),a=t.selectionStart??t.value.length,b=t.selectionEnd??a;t.value=t.value.slice(0,a)+v+t.value.slice(b);t.focus();t.selectionStart=t.selectionEnd=a+v.length;preview()}
+function preview(){const m=(S.members||[]).find(x=>x.active)||{name:'ნინო',fee:80,nextDue:S.today};
+ $('pv').innerHTML='<b>მაგალითი ('+esc(m.name)+'):</b><br>'+esc($('tpl').value.replaceAll('{name}',m.name).replaceAll('{amount}',m.fee).replaceAll('{date}',ddmm(m.nextDue)))}
 async function saveT(){await api('PUT','template',{template:$('tpl').value});$('tm').textContent='შენახულია ✓'}
 load();if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script></body></html>

@@ -79,7 +79,7 @@ async function sendSms(phone, text) {
   throw new Error('უცნობი SMS_PROVIDER: ' + provider);
 }
 const render = (tpl, m) => tpl
-  .replaceAll('{name}', m.name).replaceAll('{amount}', m.fee).replaceAll('{date}', m.nextDue);
+  .replaceAll('{name}', m.name).replaceAll('{amount}', m.fee).replaceAll('{date}', m.nextDue.split('-').reverse().join('.'));
 
 // ---------- ავტომატური შეხსენებები ----------
 let running = false;
