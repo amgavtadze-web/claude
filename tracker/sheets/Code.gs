@@ -276,9 +276,11 @@ function build_(rows) {
   ensureSales_(ss);
   const rep = ss.getSheetByName(REPORT); if (rep) ss.deleteSheet(rep);
   const old = ss.getSheetByName(SHEET_NAME);
-  if (old) old.setName('old_' + Date.now());
+  if (old) {   // ძველი ფურცელი არ იშლება: რჩება სარეზერვო ასლად (ნაცრისფერი ტაბი)
+    old.setName('Backup ' + Utilities.formatDate(new Date(), 'Asia/Tbilisi', 'yyyy-MM-dd HHmmss'));
+    old.setTabColor('#9ca3af');
+  }
   const sheet = ss.insertSheet(SHEET_NAME, 0);
-  if (old) ss.deleteSheet(old);
   const last = FIRST_ROW + ROWS - 1;
   const L = c => String.fromCharCode(64 + c);
 
