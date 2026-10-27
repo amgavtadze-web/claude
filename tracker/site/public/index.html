@@ -42,7 +42,7 @@ button.g{background:transparent;color:var(--tx);border:1px solid var(--bd)}butto
 <p><button onclick="saveT()">შენახვა</button> <span id="tm" class="m"></span></p></div>
 
 <div class="card" id="list"></div>
-<p class=m><button class=g onclick="backup()">⬇ ბექაპი</button> <label style="display:inline"><input type=file accept=".json" onchange="restore(event)" style="display:none"><span class="g" style="padding:8px 12px;border:1px solid var(--bd);border-radius:6px;cursor:pointer">⬆ აღდგენა</span></label></p>
+<p class=m><button class=g id=lb style="display:none;margin-bottom:8px" onclick="importLocal()">📲 ამ ტელეფონის ძველი მონაცემების გადმოტანა</button><br><button class=g onclick="backup()">⬇ ბექაპი</button> <label style="display:inline"><input type=file accept=".json" onchange="restore(event)" style="display:none"><span class="g" style="padding:8px 12px;border:1px solid var(--bd);border-radius:6px;cursor:pointer">⬆ აღდგენა</span></label></p>
 </main>
 <script>
 let S={members:[]},editId=null,PIN=localStorage.getItem('pin')||'';const $=i=>document.getElementById(i);
@@ -57,13 +57,17 @@ async function api(method,u,b){
 async function backup(){try{const d=await api('GET','export');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:'application/json'}));a.download='trainer-backup.json';a.click()}catch(e){alert(e.message)}}
 function restore(e){const f=e.target.files[0];e.target.value='';if(!f)return;f.text().then(async t=>{try{const d=JSON.parse(t);
  if(!confirm(`ფაილში ${d.members?.length||0} მოსწავლეა. სერვერზე არსებული მონაცემები ჩანაცვლდება. გავაგრძელო?`))return;await api('POST','import',d);load()}catch(x){alert(x.message)}})}
+function localDb(){try{const L=JSON.parse(localStorage.getItem('trainer')||'null');return L&&L.members&&L.members.length?L:null}catch(e){return null}}
+async function importLocal(){const L=localDb();if(!L)return alert('ამ ტელეფონში ძველი მონაცემები ვერ ვიპოვე');
+ if(!confirm(`ამ ტელეფონში არის ${L.members.length} მოსწავლე. სერვერზე არსებული მონაცემები ჩანაცვლდება. გავაგრძელო?`))return;
+ try{await api('POST','import',L);load()}catch(e){alert(e.message)}}
 let migrated=false;
 async function migrate(){if(migrated||S.members.length)return;migrated=true;let L;try{L=JSON.parse(localStorage.getItem('trainer')||'null')}catch(e){}
  if(L&&L.members&&L.members.length&&confirm(`ამ ტელეფონში ნაპოვნია ${L.members.length} მოსწავლე. გადავიტანო სერვერზე (SMS-ების ავტომატური გაგზავნისთვის)?`)){try{await api('POST','import',L);load()}catch(e){alert(e.message)}}}
 const diff=d=>Math.round((new Date(d)-new Date(S.today))/864e5);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 async function load(){try{S=await api('GET','state')}catch(e){$('list').innerHTML='<span class=m>'+esc(e.message)+'</span>';return}
- $('tpl').value=S.template;render();preview();migrate()}
+ $('tpl').value=S.template;render();preview();migrate();$('lb').style.display=localDb()?'':'none'}
 function rem(){const t=S.today,tm=addDays(t,1);
  const list=S.members.filter(m=>m.active&&m.nextDue===tm);
  const mode=S.sms==='live'?'':S.sms==='test'?'<div class=m style="color:var(--red)">⚠ ტესტ რეჟიმი: SMS რეალურად არ იგზავნება</div>':'<div class=m style="color:var(--red)">⚠ UBill გასაღები არ არის დაყენებული</div>';
