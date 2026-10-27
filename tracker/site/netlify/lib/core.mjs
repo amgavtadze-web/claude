@@ -70,12 +70,13 @@ let brandCache = null;
 async function brandId() {
   if (process.env.UBILL_BRAND_ID) return Number(process.env.UBILL_BRAND_ID) || process.env.UBILL_BRAND_ID;
   if (brandCache) return brandCache;
-  const r = await fetch(UBILL() + '/v1/sms/brandNames', { headers: { key: process.env.UBILL_KEY } });
-  const j = await r.json().catch(() => ({}));
+  const r = await fetch(UBILL() + '/v1/sms/brandNames', { headers: { key: (process.env.UBILL_KEY || '').trim() } });
+  const raw = await r.text(); let j = {}; try { j = JSON.parse(raw); } catch {}
+  if (!r.ok) throw new Error(`UBill-მა სათაურების სია არ დაგვიბრუნა (${r.status}). ეს გასაღების ან უფლებების პრობლემაა, არა სახელის. პასუხი: ${raw.slice(0, 200)}`);
   const list = j.brands || j.data || (Array.isArray(j) ? j : []);
   const want = (process.env.UBILL_BRAND_NAME || 'BeroFitness').toLowerCase();
   const b = list.find(x => String(x.name).toLowerCase() === want);
-  if (!b) throw new Error(`UBill: სათაური "${process.env.UBILL_BRAND_NAME || 'BeroFitness'}" ვერ ვიპოვე (${r.status}). ჩაწერე UBILL_BRAND_ID.`);
+  if (!b) throw new Error(`UBill: სათაური "${process.env.UBILL_BRAND_NAME || 'BeroFitness'}" სიაში არ არის. ნაპოვნია: ${list.map(x => x.name).join(', ') || 'არაფერი'}. ან ჩაწერე UBILL_BRAND_ID.`);
   return (brandCache = b.id);
 }
 export async function sendSms(phone, text) {
@@ -83,7 +84,7 @@ export async function sendSms(phone, text) {
   if (!process.env.UBILL_KEY) throw new Error('UBILL_KEY არ არის დაყენებული');
   const r = await fetch(UBILL() + '/v1/sms/send', {
     method: 'POST',
-    headers: { key: process.env.UBILL_KEY, 'Content-Type': 'application/json' },
+    headers: { key: process.env.UBILL_KEY.trim(), 'Content-Type': 'application/json' },
     body: JSON.stringify({ brandID: await brandId(), numbers: [phone], text, stopList: process.env.UBILL_STOPLIST !== 'false' }),
   });
   const body = await r.text(); let j = {}; try { j = JSON.parse(body); } catch {}
