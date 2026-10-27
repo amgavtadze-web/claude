@@ -37,7 +37,9 @@ input{width:100%;padding:11px;border:1px solid var(--bd);border-radius:8px;font-
 #pv{width:84px;height:84px;border-radius:10px;object-fit:cover;background:var(--bd);display:none}
 #msg{text-align:center;color:var(--mut);padding:20px}
 .dc,.hd,.d-only{display:none}
+#tot{text-align:right;line-height:1.3;font-size:13px}.tl{display:block}.tl.dt{display:none}
 @media(min-width:900px){
+.tl,.tl.dt{display:inline;margin-left:16px}
 body{font-size:16px}header{padding:14px 28px}main{padding:20px 28px}.m-only{display:none}
 #list{display:block;background:var(--card);border:1px solid var(--bd);border-top:0;border-radius:0 0 12px 12px;overflow:hidden}
 .hd,.card{display:grid;grid-template-columns:64px minmax(180px,1fr) 120px 120px 100px 190px 110px 56px;column-gap:14px;align-items:center;padding:8px 16px}
@@ -53,7 +55,7 @@ body{font-size:16px}header{padding:14px 28px}main{padding:20px 28px}.m-only{disp
 .add{max-width:340px;display:block;margin-top:14px}
 }
 </style></head><body>
-<header><b>🏋️ დანამატები</b><input id="q" type="search" placeholder="ძებნა…" oninput="draw()"></header>
+<header><b>🏋️ დანამატები</b><input id="q" type="search" placeholder="ძებნა…" oninput="draw()"><small id="tot"></small></header>
 <main><div class="hd"><span></span><span class="d-only">დასახელება</span><span class="d-only r">შეკვრის ფასი</span><span class="d-only r">1 მიღების ფასი</span><span class="d-only r">სულ მიღება</span><span class="d-only c">გაყიდული</span><span class="d-only c">დარჩენილი</span><span></span></div>
 <div id="list"><div id="msg">იტვირთება…</div></div>
 <button class="add" onclick="openForm(null)">＋ ახალი პროდუქტი</button></main>
@@ -87,11 +89,15 @@ function card(p){const left=p.total?p.total-p.sold:null;
  <button class=edit onclick="openForm(${p.row})">✎</button></div>
  <div class=bot><div class="left ${left!==null&&left<=5?'low':''}">${left!==null?'<span class=m-only>დარჩა </span><b>'+left+'</b>':''}</div>
  <div class=step><button onclick="chg(${p.row},-1)">−</button><span>${p.sold}</span><button class=p onclick="chg(${p.row},1)">+</button></div></div></div>`}
+function updTot(){const t=k=>D.reduce((x,p)=>x+(p[k]||0),0),part=(l,q)=>`${l} <b>${q}</b> მიღება`;
+ $('tot').innerHTML=`<span class=tl>${part('დღეს',t('tq'))}</span><span class=tl>${part('თვე',t('mq'))}</span><span class="tl dt">${part('სულ',t('aq'))}</span>`}
 function draw(){const q=$('q').value.trim().toLowerCase(),L=D.filter(p=>!q||String(p.name).toLowerCase().includes(q));
- $('list').innerHTML=L.length?L.map(card).join(''):'<div id=msg>პროდუქტი არ არის</div>'}
-function redraw(p){const el=$('r'+p.row);if(el)el.outerHTML=card(p)}
-function chg(row,d){const p=D.find(x=>x.row===row);
- p.sold=Math.max(0,p.total?Math.min(p.sold+d,p.total):p.sold+d);redraw(p);pend++;   // მაშინვე ჩანს
+ $('list').innerHTML=L.length?L.map(card).join(''):'<div id=msg>პროდუქტი არ არის</div>';updTot()}
+function redraw(p){const el=$('r'+p.row);if(el)el.outerHTML=card(p);updTot()}
+function chg(row,d){const p=D.find(x=>x.row===row),was=p.sold;
+ p.sold=Math.max(0,p.total?Math.min(p.sold+d,p.total):p.sold+d);
+ const dd=p.sold-was;if(dd){p.tq=(p.tq||0)+dd;p.mq=(p.mq||0)+dd;p.aq=(p.aq||0)+dd}   // ჯამები მაშინვე იცვლება
+ redraw(p);pend++;   // მაშინვე ჩანს
  chain=chain.then(()=>run('changeSold',row,d)).then(v=>{pend--;if(!pend){p.sold=v;redraw(p)}navigator.vibrate&&navigator.vibrate(10)},
   e=>{pend--;err(e);load()})}   // დაკლიკებები რიგრიგობით იგზავნება
 // ---- ფორმა: ახალი / რედაქტირება ----
