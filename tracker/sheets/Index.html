@@ -84,8 +84,8 @@ async function load(){try{const r=await run('getData');D=r.products;
  draw()}
  catch(e){if(/PIN/.test((e&&e.message)||e)){PIN=prompt('შეიყვანე PIN')||'';localStorage.setItem('pin',PIN);load()}else $('list').innerHTML='<div id=msg>'+esc((e&&e.message)||e)+'</div>'}}
 function updTot(){const t=k=>D.reduce((x,p)=>x+(p[k]||0),0);
- const part=(l,q,s)=>`${l} <b>${q}</b> მიღ. · <b>${fmt(s)} ₾</b>`;
- $('tot').innerHTML=`<span class=tl>${part('დღეს',t('tq'),t('ts'))}</span><span class=tl>${part('თვე',t('mq'),t('ms'))}</span><span class="tl dt">${part('სულ',t('aq'),t('as'))}</span>`}
+ const part=(l,q)=>`${l} <b>${q}</b> მიღება`;
+ $('tot').innerHTML=`<span class=tl>${part('დღეს',t('tq'))}</span><span class=tl>${part('თვე',t('mq'))}</span><span class="tl dt">${part('სულ',t('aq'))}</span>`}
 const cell=(q,s)=>`<b>${q}</b><small>${fmt(s)} ₾</small>`;
 function card(p){const left=p.total?p.total-p.sold:null;
  return `<div class=card id=r${p.row}><div class=top>
