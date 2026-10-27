@@ -102,6 +102,9 @@ function changeSold(pin, row, delta) {
     const d = sold - old;
     if (d !== 0) {
       sh.getRange(row, COL.SOLD).setValue(sold);
+      // „−" ადრინდელი (ისტორიაში არარსებული) გაყიდვის გასწორებისას ისტორიაში მინუსს არ ვწერთ
+      const logged = Number(sh.getRange(row, COL.AQ).getValue()) || 0;
+      if (d < 0 && logged + d < 0) return sold;
       const price = Number(sh.getRange(row, COL.PRICE).getValue()) || 0;
       const s = serials_(ss);
       ss.getSheetByName(SALES).appendRow([s.ts, s.day, s.month, idOf_(sh, row), sh.getRange(row, COL.NAME).getValue(), d, Math.round(d * price * 100) / 100]);
