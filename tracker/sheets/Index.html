@@ -9,8 +9,7 @@ header{position:sticky;top:0;background:#111;color:#fff;padding:12px 16px;displa
 header b{font-size:18px}header small{color:#f87171;font-weight:600}
 main{padding:12px;max-width:1240px;margin:0 auto}
 #list{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:10px;align-items:start}
-#list .card{margin:0}#list @media(max-width:600px){header{flex-wrap:wrap}#q{order:3;max-width:none;flex-basis:100%;margin:8px 0 0}}
-#msg{grid-column:1/-1}
+#list .card{margin:0}#list #msg{grid-column:1/-1}
 #q{max-width:260px;margin:0 12px;flex:1;background:#222;border-color:#333;color:#fff;padding:8px 10px}
 
 .card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:10px;margin-bottom:10px}
@@ -37,8 +36,9 @@ input{width:100%;padding:11px;border:1px solid var(--bd);border-radius:8px;font-
 #pv{width:84px;height:84px;border-radius:10px;object-fit:cover;background:var(--bd);display:none}
 #msg{text-align:center;color:var(--mut);padding:20px}
 .dc,.hd,.d-only{display:none}
-#tot{text-align:right;font-size:14px;color:#f87171}#tot b{color:#fff;font-size:17px}
+#tot{text-align:right;font-size:13px;line-height:1.35;color:#f87171}#tot b{color:#fff;font-size:15px}.tl{display:block}.dt{display:none}
 @media(min-width:900px){
+.tl{display:inline;margin-left:18px}.dt{display:inline}#tot{font-size:14px}
 body{font-size:16px}header{padding:14px 28px}main{padding:20px 28px}.m-only{display:none}
 #list{display:block;background:var(--card);border:1px solid var(--bd);border-top:0;border-radius:0 0 12px 12px;overflow:hidden}
 .hd,.card{display:grid;grid-template-columns:64px minmax(180px,1fr) 120px 120px 100px 190px 110px 56px;column-gap:14px;align-items:center;padding:8px 16px}
@@ -53,6 +53,7 @@ body{font-size:16px}header{padding:14px 28px}main{padding:20px 28px}.m-only{disp
 .hd .d-only{display:block}.hd{display:grid}.hd .r{text-align:right}.hd .c{text-align:center}
 .add{max-width:340px;display:block;margin-top:14px}
 }
+@media(max-width:600px){header{flex-wrap:wrap}#q{order:3;max-width:none;flex-basis:100%;margin:8px 0 0}}
 </style></head><body>
 <header><b>🏋️ დანამატები</b><input id="q" type="search" placeholder="ძებნა…" oninput="draw()"><small id="tot"></small></header>
 <main><div class="hd"><span></span><span class="d-only">დასახელება</span><span class="d-only r">შეკვრის ფასი</span><span class="d-only r">1 მიღების ფასი</span><span class="d-only r">სულ მიღება</span><span class="d-only c">გაყიდული</span><span class="d-only c">დარჩენილი</span><span></span></div>
@@ -88,13 +89,14 @@ function card(p){const left=p.total?p.total-p.sold:null;
  <button class=edit onclick="openForm(${p.row})">✎</button></div>
  <div class=bot><div class="left ${left!==null&&left<=5?'low':''}">${left!==null?'<span class=m-only>დარჩა </span><b>'+left+'</b>':''}</div>
  <div class=step><button onclick="chg(${p.row},-1)">−</button><span>${p.sold}</span><button class=p onclick="chg(${p.row},1)">+</button></div></div></div>`}
-function updTot(){const n=D.reduce((x,p)=>x+(Number(p.total)||0),0);
- $('tot').innerHTML=`სულ მიღება: <b>${n}</b>`}
+function updTot(){const t=k=>D.reduce((x,p)=>x+(Number(p[k])||0),0);
+ $('tot').innerHTML=`<span class=tl>სულ მიღება: <b>${t('total')}</b></span><span class=tl>გაყიდული: დღეს <b>${t('tq')}</b> · თვე <b>${t('mq')}</b><span class=dt> · სულ <b>${t('aq')}</b></span></span>`}
 function draw(){const q=$('q').value.trim().toLowerCase(),L=D.filter(p=>!q||String(p.name).toLowerCase().includes(q));
  $('list').innerHTML=L.length?L.map(card).join(''):'<div id=msg>პროდუქტი არ არის</div>';updTot()}
 function redraw(p){const el=$('r'+p.row);if(el)el.outerHTML=card(p);updTot()}
-function chg(row,d){const p=D.find(x=>x.row===row);
+function chg(row,d){const p=D.find(x=>x.row===row),was=p.sold;
  p.sold=Math.max(0,p.total?Math.min(p.sold+d,p.total):p.sold+d);
+ const dd=p.sold-was;if(dd){p.tq=(p.tq||0)+dd;p.mq=(p.mq||0)+dd;p.aq=(p.aq||0)+dd}   // ჯამები მაშინვე იცვლება
  redraw(p);pend++;   // მაშინვე ჩანს
  chain=chain.then(()=>run('changeSold',row,d)).then(v=>{pend--;if(!pend){p.sold=v;redraw(p)}navigator.vibrate&&navigator.vibrate(10)},
   e=>{pend--;err(e);load()})}   // დაკლიკებები რიგრიგობით იგზავნება
