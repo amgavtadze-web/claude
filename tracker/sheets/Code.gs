@@ -321,6 +321,7 @@ function build_(rows) {
   sheet.getRange(FIRST_ROW, COL.LEFT, ROWS, 7).setFormulas(restF);
 
   // ჯამების რიგი (რიგი 1)
+  sheet.getRange(1, COL.TOTAL).setFormula(`=SUM(E${FIRST_ROW}:E${last})`).setFontWeight('bold').setBackground('#fef3c7').setFontSize(13).setHorizontalAlignment('center');   // სულ მიღება (ყველა დანამატის ჯამი)
   sheet.getRange(1, COL.LEFT).setValue('ჯამი:').setHorizontalAlignment('right');
   [COL.TQ, COL.TS, COL.MQ, COL.MS, COL.AQ, COL.AS].forEach(c =>
     sheet.getRange(1, c).setFormula(`=SUM(${L(c)}${FIRST_ROW}:${L(c)}${last})`));
